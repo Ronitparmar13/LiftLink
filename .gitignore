@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+frontend/dist/
+
+# Python
+__pycache__/
+backend/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/.venv/
+backend/venv/
+env/
+venv/
+.venv/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+firebase-service-account.json
+backend/firebase-service-account.json
+*-firebase-adminsdk-*.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs & test
+*.log
+.pytest_cache/
+.coverage
+htmlcov/
+
+# PWA / build artifacts
+*.local
