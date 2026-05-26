@@ -142,3 +142,13 @@ Track progress in [`ProjectBreakdown.md`](./ProjectBreakdown.md).
 ## License
 
 Academic minor project — Parul University, Semester 6.
+
+## Team Members
+
+- Ronitkumar Parmar
+- Siddhesh Pandit
+- Nikhil Raj 
+- Dhirendra Nogiya
+- Aryan Pal
+
+
