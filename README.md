@@ -149,6 +149,6 @@ Academic minor project — Parul University, Semester 6.
 - Siddhesh Pandit
 - Nikhil Raj 
 - Dhirendra Nogiya
-- Aryan Pal
+- 
 
 
