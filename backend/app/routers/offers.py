@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.config import get_settings
@@ -72,6 +72,29 @@ async def list_my_offers(
 ):
     cursor = db.ride_offers.find({"driverId": current_user["_id"]}).sort(
         "departureTime", -1
+    )
+    return [_offer_to_response(doc) async for doc in cursor]
+
+
+@router.get("", response_model=list[OfferResponse])
+async def list_offers(
+    db: Annotated[AsyncIOMotorDatabase, Depends(get_db)],
+    _: Annotated[dict[str, Any], Depends(get_current_user)],
+    status_filter: Optional[OfferStatus] = Query(None, alias="status"),
+    departure_after: Optional[datetime] = Query(None),
+    departure_before: Optional[datetime] = Query(None),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+):
+    query: dict[str, Any] = {}
+    if status_filter:
+        query["status"] = status_filter.value
+    if departure_after:
+        query.setdefault("departureTime", {})["$gte"] = departure_after
+    if departure_before:
+        query.setdefault("departureTime", {})["$lte"] = departure_before
+    cursor = (
+        db.ride_offers.find(query).sort("departureTime", 1).skip(offset).limit(limit)
     )
     return [_offer_to_response(doc) async for doc in cursor]
 

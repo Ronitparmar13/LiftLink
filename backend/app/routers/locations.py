@@ -3,14 +3,18 @@
 from datetime import datetime, timezone
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, Request, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from app.dependencies.auth import get_current_user
 from app.dependencies.database import get_db
 from app.models.common import serialize_doc
 from app.models.poi import PoiCreate, PoiResponse, PoiSearchResponse
 from app.services.fuzzy_search import search_pois
+
+limiter = Limiter(key_func=get_remote_address)
 
 router = APIRouter(prefix="/locations", tags=["locations"])
 
@@ -48,8 +52,10 @@ async def create_poi(
     return _poi_to_response(created)
 
 
+@limiter.limit("30/minute")
 @router.get("/search", response_model=PoiSearchResponse)
 async def search_locations(
+    request: Request,
     db: Annotated[AsyncIOMotorDatabase, Depends(get_db)],
     _: Annotated[dict[str, Any], Depends(get_current_user)],
     q: str = Query(..., min_length=1, max_length=100),

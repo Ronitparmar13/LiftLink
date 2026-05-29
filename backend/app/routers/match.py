@@ -3,8 +3,10 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from app.config import get_settings
 from app.dependencies.auth import get_current_user
@@ -24,11 +26,15 @@ from app.services.geo_match import (
     route_matches_points,
 )
 
+limiter = Limiter(key_func=get_remote_address)
+
 router = APIRouter(prefix="/offers", tags=["offers"])
 
 
+@limiter.limit("10/minute")
 @router.post("/match", response_model=OfferMatchResponse)
 async def match_offers(
+    request: Request,
     body: OfferMatchRequest,
     current_user: Annotated[dict[str, Any], Depends(get_current_user)],
     db: Annotated[AsyncIOMotorDatabase, Depends(get_db)],

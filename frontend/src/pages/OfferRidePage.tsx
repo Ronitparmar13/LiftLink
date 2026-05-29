@@ -6,6 +6,7 @@ import { createOffer } from '../services/api'
 import { getApiErrorMessage } from '../utils/errors'
 import type { LatLng } from '../types/geo'
 import { toGeoPoint } from '../types/geo'
+import Button3D from '../components/Button3D'
 
 export function OfferRidePage() {
   const navigate = useNavigate()
@@ -78,30 +79,24 @@ export function OfferRidePage() {
       </Link>
       <h1 className="text-2xl font-bold text-white">Offer a Ride</h1>
 
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => setPickMode('start')}
-          className={`flex-1 rounded-lg py-2 text-sm font-medium ${
-            pickMode === 'start'
-              ? 'bg-emerald-600 text-white'
-              : 'bg-slate-800 text-slate-400'
-          }`}
-        >
-          Set Start {startPoint ? '✓' : ''}
-        </button>
-        <button
-          type="button"
-          onClick={() => setPickMode('end')}
-          className={`flex-1 rounded-lg py-2 text-sm font-medium ${
-            pickMode === 'end'
-              ? 'bg-rose-600 text-white'
-              : 'bg-slate-800 text-slate-400'
-          }`}
-        >
-          Set End {endPoint ? '✓' : ''}
-        </button>
-      </div>
+       <div className="flex gap-2">
+         <Button3D
+           variant={pickMode === 'start' ? 'secondary' : 'outline'}
+           size="md"
+           onClick={() => setPickMode('start')}
+           className="flex-1"
+         >
+           Set Start {startPoint ? '✓' : ''}
+         </Button3D>
+         <Button3D
+           variant={pickMode === 'end' ? 'secondary' : 'outline'}
+           size="md"
+           onClick={() => setPickMode('end')}
+           className="flex-1"
+         >
+           Set End {endPoint ? '✓' : ''}
+         </Button3D>
+       </div>
 
       <MapView
         pickMode={pickMode}
@@ -164,13 +159,15 @@ export function OfferRidePage() {
 
         {error && <p className="text-sm text-red-400">{error}</p>}
 
-        <button
+        <Button3D
+          variant="primary"
+          size="lg"
           type="submit"
           disabled={submitting}
-          className="min-h-[48px] w-full rounded-xl bg-blue-600 py-3 font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
+          className="w-full"
         >
           {submitting ? 'Publishing…' : 'Publish ride offer'}
-        </button>
+        </Button3D>
       </form>
     </div>
   )

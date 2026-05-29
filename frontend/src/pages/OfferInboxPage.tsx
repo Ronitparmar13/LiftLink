@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { FuelSplitBadge } from '../components/FuelSplitBadge'
+import { ListSkeleton } from '../components/Skeleton'
 import { useTrips } from '../contexts/TripContext'
 import {
   acceptRequest,
@@ -17,6 +19,7 @@ export function OfferInboxPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [actingId, setActingId] = useState<string | null>(null)
+  const [confirmRejectId, setConfirmRejectId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     if (!offerId) return
@@ -69,7 +72,7 @@ export function OfferInboxPage() {
       </Link>
       <h1 className="text-2xl font-bold text-white">Ride requests</h1>
 
-      {loading && <p className="text-slate-400">Loading…</p>}
+      {loading && <ListSkeleton count={3} />}
       {error && <p className="text-red-400">{error}</p>}
 
       {!loading && requests.length === 0 && (
@@ -106,7 +109,7 @@ export function OfferInboxPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleReject(req.id)}
+                  onClick={() => setConfirmRejectId(req.id)}
                   disabled={actingId === req.id}
                   className="flex-1 rounded-lg border border-slate-600 py-2 text-sm text-slate-300 disabled:opacity-60"
                 >
@@ -117,6 +120,18 @@ export function OfferInboxPage() {
           </li>
         ))}
       </ul>
+
+      <ConfirmDialog
+        open={confirmRejectId !== null}
+        title="Reject ride request?"
+        message="The rider will be notified that their request was declined."
+        confirmLabel="Reject"
+        onConfirm={() => {
+          if (confirmRejectId) void handleReject(confirmRejectId)
+          setConfirmRejectId(null)
+        }}
+        onCancel={() => setConfirmRejectId(null)}
+      />
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { PaymentDisclaimer } from '../components/FuelSplitBadge'
 import { LocationSearchInput } from '../components/LocationSearchInput'
 import { MapView, type PickMode, type RouteOverlay } from '../components/MapView'
 import { RideMatchCard } from '../components/RideMatchCard'
+import Button3D from '../components/Button3D'
 import { matchOffers, createRequest } from '../services/api'
 import { getApiErrorMessage } from '../utils/errors'
 import type { LatLng } from '../types/geo'
@@ -115,30 +116,24 @@ export function FindRidePage() {
         and dropoff.
       </p>
 
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => setPickMode('pickup')}
-          className={`flex-1 rounded-lg py-2 text-sm font-medium ${
-            pickMode === 'pickup'
-              ? 'bg-emerald-600 text-white'
-              : 'bg-slate-800 text-slate-400'
-          }`}
-        >
-          Pickup {pickupPoint ? '✓' : ''}
-        </button>
-        <button
-          type="button"
-          onClick={() => setPickMode('dropoff')}
-          className={`flex-1 rounded-lg py-2 text-sm font-medium ${
-            pickMode === 'dropoff'
-              ? 'bg-rose-600 text-white'
-              : 'bg-slate-800 text-slate-400'
-          }`}
-        >
-          Dropoff {dropoffPoint ? '✓' : ''}
-        </button>
-      </div>
+       <div className="flex gap-2">
+         <Button3D
+           variant={pickMode === 'pickup' ? 'secondary' : 'outline'}
+           size="md"
+           onClick={() => setPickMode('pickup')}
+           className="flex-1"
+         >
+           Pickup {pickupPoint ? '✓' : ''}
+         </Button3D>
+         <Button3D
+           variant={pickMode === 'dropoff' ? 'secondary' : 'outline'}
+           size="md"
+           onClick={() => setPickMode('dropoff')}
+           className="flex-1"
+         >
+           Dropoff {dropoffPoint ? '✓' : ''}
+         </Button3D>
+       </div>
 
       <MapView
         pickMode={pickMode}
@@ -192,13 +187,15 @@ export function FindRidePage() {
           </label>
         </div>
 
-        <button
+        <Button3D
+          variant="primary"
+          size="lg"
           type="submit"
           disabled={searching}
-          className="min-h-[48px] w-full rounded-xl bg-blue-600 py-3 font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
+          className="w-full"
         >
           {searching ? 'Searching…' : 'Search matching rides'}
-        </button>
+        </Button3D>
       </form>
 
       {error && <p className="text-sm text-red-400">{error}</p>}

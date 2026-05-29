@@ -1,17 +1,34 @@
 """LiftLink FastAPI application entry point."""
 
+import logging
+import time
+import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.dependencies.database import close_motor_client, get_motor_client
 from app.exceptions import register_exception_handlers
 from app.routers import api_router
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='{"time":"%(asctime)s","level":"%(levelname)s","request_id":"%(request_id)s","message":"%(message)s"}',
+)
+logger = logging.getLogger("liftlink")
+
 settings = get_settings()
+
+limiter = Limiter(key_func=get_remote_address)
+
+APP_VERSION = "1.0.0"
 
 
 def _init_firebase() -> None:
@@ -40,9 +57,18 @@ app = FastAPI(
     description="AI-Powered Hyper-Local Campus Ride-Pooling — Parul University",
     version="1.0.0",
     lifespan=lifespan,
+    state=limiter,
 )
 
 register_exception_handlers(app)
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_exceeded_handler(request, exc):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Rate limit exceeded. Please try again later."},
+    )
 
 app.add_middleware(
     CORSMiddleware,
@@ -51,6 +77,25 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def request_id_middleware(request: Request, call_next):
+    request_id = request.headers.get("X-Request-ID", str(uuid.uuid4())[:8])
+    request.state.request_id = request_id
+    start = time.perf_counter()
+    response = await call_next(request)
+    elapsed_ms = round((time.perf_counter() - start) * 1000, 1)
+    logger.info(
+        "%s %s %s %sms",
+        request.method,
+        request.url.path,
+        response.status_code,
+        elapsed_ms,
+        extra={"request_id": request_id},
+    )
+    response.headers["X-Request-ID"] = request_id
+    return response
 
 app.include_router(api_router, prefix="/api/v1")
 
@@ -75,6 +120,7 @@ async def health_check():
     return {
         "status": "ok",
         "service": "liftlink-api",
+        "version": APP_VERSION,
         "mongodb": mongo_status,
         "firebase": firebase_status,
     }

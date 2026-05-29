@@ -58,23 +58,44 @@ export function LocationSearchInput({
           setOpen(true)
         }}
         onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 200)}
         placeholder={placeholder}
-        className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-white"
+        className="
+          mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-white
+          transition-all duration-300 ease-out
+          transform-gpu
+          focus:outline-none
+          focus:border-primary-500
+          focus:ring-2 focus:ring-primary-500/20
+          focus:translate-y-[-1px]
+          focus:scale-101
+          focus:drop-shadow-[0_4px_12px_-2px_rgba(59,130,246,0.3)]
+        "
       />
       {open && value.trim().length >= 2 && (results.length > 0 || loading) && (
-        <div className="absolute z-[1000] mt-1 max-h-56 w-full overflow-auto rounded-lg border border-slate-700 bg-slate-950 shadow-xl">
+        <div className="
+          absolute z-[1000] mt-2 max-h-60 w-full overflow-auto rounded-xl border border-slate-700 bg-slate-950/90 backdrop-blur-sm
+          shadow-2xl
+          transition-all duration-300 ease-out
+          transform-gpu
+        "
+        >
           {loading && (
-            <p className="px-3 py-2 text-sm text-slate-500">Searching…</p>
+            <p className="px-4 py-3 text-sm text-slate-500">Searching…</p>
           )}
           {results.map((poi) => (
             <button
               key={poi.poiId}
               type="button"
-              onClick={() => {
+              onMouseDown={(e) => {
+                e.preventDefault()
                 onSelect(poi.name, fromGeoPoint(poi.location))
                 setOpen(false)
               }}
-              className="block w-full px-3 py-2 text-left hover:bg-slate-800"
+              className="
+                block w-full px-4 py-3 text-left hover:bg-slate-800/70
+                transition-all duration-200 ease-out
+              "
             >
               <span className="block text-sm font-medium text-white">
                 {poi.name}

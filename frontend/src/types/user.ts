@@ -5,6 +5,11 @@ export interface VehicleInfo {
   description?: string
 }
 
+export interface UserStats {
+  ridesAsDriver: number
+  ridesAsRider: number
+}
+
 export interface UserProfile {
   id: string
   firebaseUid: string
@@ -14,6 +19,7 @@ export interface UserProfile {
   phone?: string | null
   role: UserRole
   vehicle?: VehicleInfo | null
+  stats?: UserStats
   isActive: boolean
   createdAt: string
   updatedAt: string

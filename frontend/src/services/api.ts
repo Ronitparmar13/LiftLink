@@ -148,6 +148,11 @@ export async function cancelRequest(id: string): Promise<RideRequest> {
   return data
 }
 
+export async function cancelOffer(id: string): Promise<RideOffer> {
+  const { data } = await api.delete<RideOffer>(`/offers/${id}`)
+  return data
+}
+
 export async function completeRequest(id: string): Promise<RideRequest> {
   const { data } = await api.patch<RideRequest>(`/requests/${id}/complete`)
   return data

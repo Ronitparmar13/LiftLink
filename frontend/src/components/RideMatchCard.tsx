@@ -1,5 +1,6 @@
 import { FuelSplitBadge } from './FuelSplitBadge'
 import type { MatchResult } from '../types/match'
+import Button3D from '../components/Button3D'
 
 interface RideMatchCardProps {
   match: MatchResult
@@ -46,23 +47,24 @@ export function RideMatchCard({
         </span>
       </div>
 
-      <div className="mt-3 flex items-center justify-between border-t border-slate-800 pt-3">
-        <FuelSplitBadge
-          distanceKm={match.riderDistanceKm}
-          ratePerKm={offer.fuelSplitRatePerKm}
-          total={match.estimatedFuelSplitCost}
-        />
-        {onRequest && (
-          <button
-            type="button"
-            onClick={onRequest}
-            disabled={requesting}
-            className="min-h-[40px] rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-60"
-          >
-            {requesting ? '…' : 'Request Ride'}
-          </button>
-        )}
-      </div>
+       <div className="mt-3 flex items-center justify-between border-t border-slate-800 pt-3">
+         <FuelSplitBadge
+           distanceKm={match.riderDistanceKm}
+           ratePerKm={offer.fuelSplitRatePerKm}
+           total={match.estimatedFuelSplitCost}
+         />
+         {onRequest && (
+           <Button3D
+             variant="primary"
+             size="md"
+             onClick={onRequest}
+             disabled={requesting}
+             className="min-h-[40px]"
+           >
+             {requesting ? '…' : 'Request Ride'}
+           </Button3D>
+         )}
+       </div>
     </li>
   )
 }

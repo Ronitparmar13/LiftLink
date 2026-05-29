@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getTrendingHotspots, refreshHotspots } from '../services/api'
 import type { TrendingHotspotsResponse } from '../types/hotspot'
+import { ListSkeleton } from './Skeleton'
 
 export function TrendingHotspots() {
   const [data, setData] = useState<TrendingHotspotsResponse | null>(null)
@@ -53,7 +54,7 @@ export function TrendingHotspots() {
         </button>
       </div>
 
-      {loading && <p className="text-sm text-slate-500">Loading zones…</p>}
+      {loading && <ListSkeleton count={2} />}
 
       {!loading && (!data || data.zones.length === 0) && (
         <p className="rounded-xl border border-dashed border-slate-700 p-4 text-center text-sm text-slate-500">
